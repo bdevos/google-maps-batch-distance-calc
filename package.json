@@ -1,0 +1,13 @@
+{
+  "name": "google-maps-batch-distance-calc",
+  "version": "1.0.0",
+  "description": "",
+  "author": "Berry de Vos <berry@devos.io>",
+  "license": "ISC",
+  "dependencies": {
+    "build-url": "^1.0.9",
+    "csv": "^1.1.0",
+    "prompt": "^1.0.0",
+    "stream-transform": "^0.1.1"
+  }
+}

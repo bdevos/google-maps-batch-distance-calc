@@ -1,0 +1,18 @@
+{
+  "input": {
+    "message": "Input file (CSV)",
+    "default": "data/sample.csv"
+  },
+  "output": {
+  	"message": "Output file",
+  	"default": "data/output.csv"
+  },
+  "mode": {
+  	"message": "Travel mode (driving, walking, bicycling)",
+  	"default": "bicycling"
+  },
+  "key": {
+  	"message": "Google Maps API key",
+  	"required": true
+  }
+}
