@@ -6,32 +6,22 @@ const prompt = require('prompt');
 const buildUrl = require('build-url');
 const parse = require('csv-parse');
 const transform = require('stream-transform');
-const HEADER_ROW = 'Respnr;From;To;Distance (meters);Duration (seconds);Status\n';
+const HEADER_ROW = 'Respnr;Resp;Ver;Distance (meters);Duration (seconds);Status\n';
 
 prompt.properties = require('./prompt.properties.json');
 
 var mode, key;
 var parser = parse({delimiter: ';'});
 
-var createSearchablePostcode = (postcode) => {
-  if (postcode.length != 6) {
-    return;
-  }
-  return `${postcode.substr(0, 4)} ${postcode.substr(4)} Nederland`;
+var createSearchableAddress = (street, houseNumber, addition, postcode, city) => {
+  return `${street} ${houseNumber}${addition}, ${postcode} ${city}`;
 };
 
 var transformer = transform((record, callback) => {
-  if (record.length === 3 && Number.isInteger(parseInt(record[0]))) {
-    let origin = createSearchablePostcode(record[1]);
-    let destination = createSearchablePostcode(record[2]);
-
-    if (!origin || !destination) {
-      record.push(null);
-      record.push(null);
-      record.push('Invalid postcode');
-      callback(null, record.join(';')+'\n');
-      return;
-    }
+  if (record.length === 12 && Number.isInteger(parseInt(record[1]))) {
+    let origin = createSearchableAddress(record[2], record[3], record[4], record[5], record[6]);
+    let destination = createSearchableAddress(record[7], record[8], record[9], record[10], record[11]);
+    var returnValues = [record[1], origin, destination];
 
     let url = buildUrl('https://maps.googleapis.com', {
       path: 'maps/api/distancematrix/json',
@@ -51,24 +41,24 @@ var transformer = transform((record, callback) => {
       res.on('end', () => {
         let distancematrix = JSON.parse(rawData);
         if (distancematrix.status === 'OK' && distancematrix.rows[0].elements[0].status === 'OK') {
-          record.push(distancematrix.rows[0].elements[0].distance.value);
-          record.push(distancematrix.rows[0].elements[0].duration.value);
-          record.push(distancematrix.status);
+          returnValues.push(distancematrix.rows[0].elements[0].distance.value);
+          returnValues.push(distancematrix.rows[0].elements[0].duration.value);
+          returnValues.push(distancematrix.status);
         } else {
-          record.push(null);
-          record.push(null);
+          returnValues.push(null);
+          returnValues.push(null);
           if (distancematrix.status !== 'OK') {
-            record.push(distancematrix.status);
+            returnValues.push(distancematrix.status);
           } else {
-            record.push(distancematrix.rows[0].elements[0].status);
+            returnValues.push(distancematrix.rows[0].elements[0].status);
           }
         }
-        callback(null, record.join(';')+'\n');
+        callback(null, returnValues.join(';')+'\n');
       });
     }).on('error', (e) => {
       console.error(e);
     });
-  } else if (record[0] === 'Respnr') {
+  } else if (record[1] === 'Respnr') {
     callback(null, HEADER_ROW);
   } else {
     callback();

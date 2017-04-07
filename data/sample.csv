@@ -1,4 +1,2 @@
-Respnr;Postcode_woonadres_pc6;Verenigingspostcode
-1;3521BT;3523ED
-2;3645BB;3523ED
-3;3645BB;13965
+Wie;Respnr;Resp_Straat;Resp_Huisnummer;Resp_Huisnummertoevoeging;Resp_Postcode;Resp_Woonplaats;Ver_Straat;Ver_Huisnummer;Ver_Huisnummer_Toev;Ver_Postcode;Ver_Woonplaats
+;1;Nijverheidsweg;6;;3606AJ;Maarssen;Ambachtsweg;54;;3542DH;Utrecht
